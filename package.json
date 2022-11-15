@@ -8,7 +8,19 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@topology/activity-diagram": "^1.1.0",
+    "@topology/chart-diagram": "^1.2.10",
+    "@topology/class-diagram": "^1.1.0",
+    "@topology/core": "^1.2.14",
+    "@topology/flow-diagram": "^1.1.1",
+    "@topology/sequence-diagram": "^1.1.0",
+    "babel-polyfill": "^6.26.0",
+    "classlist-polyfill": "^1.2.0",
     "core-js": "^3.6.5",
+    "element-ui": "^2.15.10",
+    "node-sass": "^4.12.0",
+    "sass": "^1.56.1",
+    "sass-loader": "^7.0.1",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "vuex": "^3.4.0"
