@@ -1,6 +1,5 @@
 <template>
   <div class="hello">
-    <el-button type="primary" @click="save">保存</el-button>
     <div id="topology"></div>
     <canvas id="test"></canvas>
   </div>
@@ -31,19 +30,76 @@ export default {
       },
       topology: {},
       componentsData: {},
+      active:[]
     };
   },
   mounted() {
+    this.$eventBus.$on("exitEditor", () => {
+      this.exitEditor();
+    });
     this.$eventBus.$on("dragstart", (e) => {
       this.onDragstart(e);
     });
     this.$eventBus.$on("onTouchstart", (e) => {
       this.onTouchstart(e);
     });
+    //锁定视图
+    this.$eventBus.$on("onLocker", () => {
+      console.log("locker")
+      this.topology.lock(10)
+    });
+    //解锁视图
+    this.$eventBus.$on("unLocker", () => {
+      console.log("locker")
+      this.topology.lock(0)
+    });
+    //设置视图大小
+    this.$eventBus.$on("scale", (v) => {
+      this.topology.scale(v)
+    });
+    //设置视图大小
+    this.$eventBus.$on("fitView", () => {
+      this.topology.fitView()
+      this.$eventBus.$emit("fitViewComplete",this.topology.store.data.scale)
+    });
+    //撤销
+    this.$eventBus.$on("undo", () => {
+      this.topology.undo()
+    });
+    //重做
+    this.$eventBus.$on("redo", () => {
+      this.topology.redo()
+    });
+    //剪切
+    this.$eventBus.$on("cut", () => {
+      this.topology.cut()
+    });
+    //复制
+    this.$eventBus.$on("copy", () => {
+      this.topology.copy()
+    });
+    //粘贴
+    this.$eventBus.$on("paste", () => {
+      this.topology.paste()
+    });
+    //更改连线类型
+    this.$eventBus.$on("updateLineType", (e) => {
+      for(let data of this.topology.store.active){
+        this.topology.updateLineType(data,e);
+      }
+    });
+    //更改画笔属性
+    this.$eventBus.$on("setPen", (obj) => {
+      console.log(obj,'==setPenobj==')
+      this.topology.setValue(obj)
+    });
     this.topology = new Topology("topology", this.options);
+    this.active =  this.topology.store.active
     for (let info of dataComPonents) {
       this.componentsData[info.name] = info;
     }
+    this.topology.beforeAddPens = this.beforeAddPens
+   
     console.log(this.componentsData, "==this.componentsData==");
     registerHighcharts();
     registerEcharts();
@@ -55,6 +111,20 @@ export default {
     this.topology.registerCanvasDraw(sequencePensbyCtx());
     this.topology.register(classPens());
     console.log(this.topology, "==this.topology==");
+    let that = this
+    // this.topology.beforeAddPens = async (pens) => {
+    //   console.log("addPens", pens);
+    //   // 返回 true 允许 remove
+    //   return true
+    // };
+    this.topology.canvas.onMouseUp = function (base) {
+      return function () {
+        base.apply(this, arguments);
+        console.log(that.topology.store.active,"test")
+        that.active = that.topology.store.active
+        that.$eventBus.$emit('activeDataReflash',that.active)
+      }
+    }(this.topology.canvas.onMouseUp);
     // const json = {
     //   x: 0,
     //   y: 0,
@@ -386,88 +456,57 @@ export default {
       image:
         "http://iot.cloudta.cn:30001/bladex/upload/20220602/c8daafcaf9cda133dff504bdc8ecb242.png",
       id: "9dc2be6",
-      children: [],
       x: 321,
       y: 257,
-      lineWidth: 1,
-      fontSize: 12,
-      lineHeight: 1.5,
-      anchors: [
-        {
-          id: "0",
-          penId: "9dc2be6",
-          x: 0.5,
-          y: 0,
-        },
-        {
-          id: "1",
-          penId: "9dc2be6",
-          x: 1,
-          y: 0.5,
-        },
-        {
-          id: "2",
-          penId: "9dc2be6",
-          x: 0.5,
-          y: 1,
-        },
-        {
-          id: "3",
-          penId: "9dc2be6",
-          x: 0,
-          y: 0.5,
-        },
-      ],
-      rotate: 0,
     };
     this.topology.addPen(imgage);
-    const gif = {
-      anchors: [
-        {
-          id: "0",
-          penId: "1bcf065a",
-          x: 0.5,
-          y: 0,
-        },
-        {
-          id: "1",
-          penId: "1bcf065a",
-          x: 1,
-          y: 0.4999999999999998,
-        },
-        {
-          id: "2",
-          penId: "1bcf065a",
-          x: 0.5,
-          y: 1.0000000000000004,
-        },
-        {
-          id: "3",
-          penId: "1bcf065a",
-          x: 0,
-          y: 0.4999999999999998,
-        },
-      ],
-      center: {
-        x: 382.00000000000006,
-        y: 336.50000000000006,
-      },
-      children: [],
-      fontSize: 12,
-      height: 185.6666666666667,
-      id: "1bcf065a",
-      image: "./test.gif",
-      imageRatio: true,
-      lineHeight: 1.5,
-      lineWidth: 1,
-      lockedOnCombine: 0,
-      name: "gif",
-      rotate: 0,
-      width: 280.0000000000001,
-      x: 242,
-      y: 243.66666666666669,
-    };
-    this.topology.addPen(gif);
+    // const gif = {
+    //   anchors: [
+    //     {
+    //       id: "0",
+    //       penId: "1bcf065a",
+    //       x: 0.5,
+    //       y: 0,
+    //     },
+    //     {
+    //       id: "1",
+    //       penId: "1bcf065a",
+    //       x: 1,
+    //       y: 0.4999999999999998,
+    //     },
+    //     {
+    //       id: "2",
+    //       penId: "1bcf065a",
+    //       x: 0.5,
+    //       y: 1.0000000000000004,
+    //     },
+    //     {
+    //       id: "3",
+    //       penId: "1bcf065a",
+    //       x: 0,
+    //       y: 0.4999999999999998,
+    //     },
+    //   ],
+    //   center: {
+    //     x: 382.00000000000006,
+    //     y: 336.50000000000006,
+    //   },
+    //   children: [],
+    //   fontSize: 12,
+    //   height: 185.6666666666667,
+    //   id: "1bcf065a",
+    //   image: "./test.gif",
+    //   imageRatio: true,
+    //   lineHeight: 1.5,
+    //   lineWidth: 1,
+    //   lockedOnCombine: 0,
+    //   name: "gif",
+    //   rotate: 0,
+    //   width: 280.0000000000001,
+    //   x: 242,
+    //   y: 243.66666666666669,
+    // };
+    // this.topology.addPen(gif);
     this.topology.inactive();
     document.getElementsByTagName("canvas")[1].style.left = 0;
   },
@@ -476,13 +515,25 @@ export default {
     this.$eventBus.$off("onTouchstart");
   },
   methods: {
+    async beforeAddPens(pens){
+      console.log("addPens", pens);
+      // 1. window.confirm 会阻塞后面代码，不推荐
+      // return window.confirm("是否添加此类图元？");
+
+      // 2. Promise 类型 Modal
+      // showDialog 伪代码，需自行实现
+      // 返回 true 允许 remove
+      return true
+    },
     addPen(obj) {
       this.topology.addPen(obj);
       this.topology.inactive();
     },
     onDragstart(obj) {
+      this.exitEditor()
       console.log(obj);
       const { e, item } = obj;
+      console.log(this.componentsData,'==componentsData==')
       let setObj = {
         ...this.componentsData[item.data.name],
         ...item.data,
@@ -492,79 +543,39 @@ export default {
       console.log(setObj, "==setObj==");
       e.dataTransfer.setData("Text", JSON.stringify(setObj));
     },
-    onTouchstart() {
-      console.log("test");
-      function trianglex(pen) {
-        var canvas = document.getElementsByTagName("canvas");
-        console.log(canvas);
-        var ctx = canvas[0].getContext("2d");
-        console.log(pen, ctx, "==pen==");
-        // 在绘画中若更改了 ctx 的某个属性，例如：fillStyle, strokeStyle, lineWidth 等样式属性，需使用 save 和 restore
-        // 注意 save restore 需要成对调用
-        // ctx.save();
-        // 若在绘画函数中，配置了 ctx.strokeStyle or fillStyle ，那么画笔的 color or background 无法对它生效
-        // ctx.strokeStyle = '#1890ff';
-        ctx.moveTo(
-          pen.calculative.worldRect.x + pen.calculative.worldRect.width / 2,
-          pen.calculative.worldRect.y
-        );
-        ctx.lineTo(
-          pen.calculative.worldRect.x + pen.calculative.worldRect.width,
-          pen.calculative.worldRect.y + pen.calculative.worldRect.height
-        );
-        ctx.lineTo(
-          pen.calculative.worldRect.x,
-          pen.calculative.worldRect.y + pen.calculative.worldRect.height
-        );
-        ctx.lineTo(
-          pen.calculative.worldRect.x + pen.calculative.worldRect.width / 2,
-          pen.calculative.worldRect.y
-        );
-
-        ctx.closePath();
-        ctx.stroke();
-        // 若需要填充 ctx.fill();
-
-        // ctx.restore();
-      }
-      function triangleAnchors(pen) {
-        console.log(pen, "==triangleAnchors==");
-        const anchors = [];
-        anchors.push({
-          id: "0",
-          penId: pen.id,
-          x: 0.5,
-          y: 0,
-        });
-
-        anchors.push({
-          id: "1",
-          penId: pen.id,
-          x: 1,
-          y: 1,
-        });
-
-        anchors.push({
-          id: "2",
-          penId: pen.id,
-          x: 0,
-          y: 1,
-        });
-        pen.anchors = anchors;
-      }
-      this.topology.register({ trianglex });
-      this.topology.registerAnchors({ trianglex: triangleAnchors });
-      // 4. 开始使用
-      const pen = {
-        name: "trianglex",
-        text: "三角形",
-        x: 100,
-        y: 100,
-        width: 100,
-        height: 100,
+    onTouchstart(obj) {
+      this.exitEditor()
+      const {  item } = obj;
+      console.log(this.componentsData,item,'==componentsData==')
+      let setObj = {
+        ...this.componentsData[item.data.name],
+        ...item.data,
+        ...(item.data.rect ? item.data.rect : {}),
+        ...(item.data.data ? item.data.data : {}),
       };
-      this.topology.addPen(pen);
-      this.topology.inactive();
+      if(item.name=='涂鸦'||item.name=='涂鸦2'){
+        this.topology.drawingPencil()
+        return
+      }
+      if(item.name=='钢笔'){
+        this.topology.drawLine('line')
+        return
+      }
+      if(item.name=='钢笔节点'){
+        this.topology.drawLine('curve')
+        return
+      }
+      if(item.name=='钢笔闭合节点'){
+        this.topology.drawLine('polyline')
+        return
+      }
+      this.topology.canvas.addCaches = deepClone([setObj]);
+    },
+    exitEditor(){
+      const {topology} = this
+      topology.inactive();
+      topology.stopPencil();
+      topology.finishDrawLine();
     },
     save() {
       let obj = {};

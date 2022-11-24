@@ -235,7 +235,20 @@ export const data = [
     },
     {
         name: "echarts",
+        text: "echarts",
         width: 400,
         height: 300
-      }
+    },
+    {
+        name: "image",
+        text: "image",
+        width: 200,
+        height: 200
+    } ,
+    {
+        name: "gif",
+        text: "gif",
+        width: 200,
+        height: 200
+    }
 ]

@@ -12,7 +12,7 @@
             <div :title="info.name" class="center hover" 
             draggable="true"
             @dragstart="onDragstart($event,info)"
-            @click="onTouchstart($event)">
+            @click="onTouchstart($event,info)">
               <i
                 :class="`icon-size ${info.icon}`"
               ></i
@@ -41,9 +41,9 @@ export default {
       console.log(e)
       this.$eventBus.$emit('dragstart',{e,item})
     },
-    onTouchstart(e) {
+    onTouchstart(e,item) {
         console.log(e)
-        this.$eventBus.$emit('onTouchstart',e)
+        this.$eventBus.$emit('onTouchstart',{e,item})
     },
   },
   created() {

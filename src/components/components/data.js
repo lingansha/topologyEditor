@@ -25,6 +25,17 @@ export const defalutMaterials = [
           }
         },
         {
+          name: 'image',
+          icon: 't-icon t-rect',
+          id: 56546,
+          data: {
+            text: 'image',
+            name: 'image',
+            image:
+            "http://iot.cloudta.cn:30001/bladex/upload/20220602/c8daafcaf9cda133dff504bdc8ecb242.png",
+          }
+        },
+        {
           name: 'rectangle',
           icon: 't-icon t-rectangle',
           id: 2,
