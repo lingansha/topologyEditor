@@ -137,13 +137,13 @@ export default {
     },
   },
   mounted() {
-    // for (let key in this.data) {
-    //   for (let key2 in this.form) {
-    //     if (key == key2) {
-    //       this.form[key2] = this.data[key];
-    //     }
-    //   }
-    // }
+    for (let key in this.data) {
+      for (let key2 in this.form) {
+        if (key == key2) {
+          this.form[key2] = this.data[key];
+        }
+      }
+    }
     console.log(this.form);
   },
   data() {

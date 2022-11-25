@@ -14,7 +14,7 @@
             <i class="t-icon t-save"></i
             ><!---->
           </div>
-          <div>保存</div>
+          <div @click="save">保存</div>
           <!----></a
         >
       </span>
@@ -144,6 +144,9 @@ export default {
     updateLineType(e){
       console.log(e)
       this.$eventBus.$emit('updateLineType',e)
+    },
+    save(){
+      this.$eventBus.$emit('saveTopo')
     },
     test(e){
       console.log(e)
