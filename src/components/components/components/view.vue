@@ -1,7 +1,7 @@
 <template>
     <div class="contaner">
-        <lineX :data="data"  v-if="data.type==1" />
-        <node :data="data" v-if="data.type==0" />
+        <lineX :data="data" :key="data.id" v-if="data.type==1" />
+        <node :data="data" :key="data.id" v-if="data.type==0" />
     </div>
 </template>
 <script>
@@ -25,6 +25,6 @@ export default {
         return {
             activeNames: '1',
         };
-    }
+    },
 }
 </script>

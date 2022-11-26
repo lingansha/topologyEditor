@@ -78,11 +78,11 @@
                                     </span>
                                     <span>
                                         <el-switch
-                                        v-model="node.gradientFromColor">
+                                        v-model="node.gradientFromColorShow">
                                         </el-switch>
                                     </span>
                                 </div>
-                                <template v-if="node.gradientFromColor">
+                                <template v-if="node.gradientFromColorShow">
                                 <div class="combox">
                                     <div class="setcolor">
                                         <span>
@@ -126,6 +126,84 @@
                                         </span>
                                     </div>
                             </div>
+                            <div class="combox">
+                                    <div class="setcolor">
+                                        <span>
+                                            背景颜色
+                                        </span>
+                                        <span class="colorInput">
+                                            <el-select v-model="node.bkType" placeholder="请选择" @change="backColorTypeChange">
+                                                <el-option
+                                                v-for="item in backColorOptions"
+                                                :key="item.value"
+                                                :label="item.label"
+                                                :value="item.value">
+                                                </el-option>
+                                            </el-select>
+                                        </span>
+                                    </div>
+                            </div>
+                            <div class="combox" v-if="node.bkType==0">
+                                    <div class="setcolor">
+                                        <span>
+                                            纯色背景
+                                        </span>
+                                        <span>
+                                            <span @click="setColor('background')" class="colorBox" :style="`background-color:${node.background}`"></span>
+                                            <span class="colorInput"><el-input v-model="node.background" placeholder="请输入内容"></el-input></span>
+                                        </span>
+                                    </div>
+                            </div>
+                            
+                            <template v-if="node.bkType==1 || node.bkType==2">
+                            <div class="combox">
+                                    <div class="setcolor">
+                                        <span>
+                                            开始颜色
+                                        </span>
+                                        <span>
+                                            <span @click="setColor('gradientFromColor')" class="colorBox" :style="`background-color:${node.gradientFromColor}`"></span>
+                                            <span class="colorInput"><el-input v-model="node.gradientFromColor" placeholder="请输入内容"></el-input></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="combox">
+                                    <div class="setcolor">
+                                        <span>
+                                            结束颜色
+                                        </span>
+                                        <span>
+                                            <span @click="setColor('gradientToColor')" class="colorBox" :style="`background-color:${node.gradientToColor}`"></span>
+                                            <span class="colorInput"> <el-input v-model="node.gradientToColor" placeholder="请输入内容"></el-input></span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </template>
+                            <template v-if="node.bkType==1">
+                                <div class="combox">
+                                    <div class="setcolor">
+                                        <span>
+                                            渐变角度
+                                        </span>
+                                        <span>
+                                            <el-input-number v-model="node.gradientAngle" controls-position="right" @change="setPen('gradientAngle')" ></el-input-number>
+                                        </span>
+                                    </div>
+                            </div>
+                            </template>
+                            <template v-if="node.bkType==2">
+                                <div class="combox">
+                                    <div class="setcolor">
+                                        <span>
+                                            渐变半径
+                                        </span>
+                                        <span>
+                                            <el-input-number v-model="node.gradientRadius" controls-position="right" @change="setPen('gradientRadius')" ></el-input-number>
+                                        </span>
+                                    </div>
+                            </div>
+                            </template>
+                            
                         </div>
                     </el-collapse-item>
                     <el-collapse-item title="文字" name="2">
@@ -156,7 +234,7 @@ export default {
         return {
             activeNames: '1',
             node:{
-                gradientFromColor:false,
+                gradientFromColorShow:false,
                 height:100,
                 x:100,
                 y:100,
@@ -164,9 +242,25 @@ export default {
                 lineGradientFromColor:'#000',
                 lineGradientToColor:'#000',
                 lineWidth:1,
-                globalAlpha:1
+                globalAlpha:1,
+                background:'#000',
+                gradientFromColor:'#000',
+                gradientToColor:'#000',
+                bkType:0,
+                gradientAngle:0,
+                gradientRadius:0
             },
-        };
+            backColorOptions: [{
+                value: 0,
+                label: '纯色背景'
+                }, {
+                value: 1,
+                label: '线性渐变'
+                }, {
+                value: 2,
+                label: '径向渐变'
+             }],
+            }
     },
     mounted(){
         console.log(this.data,'==this.data==')
@@ -178,7 +272,7 @@ export default {
                     }
         }
         if(this.data.lineGradientFromColor || this.data.lineGradientToColor){
-            this.node.gradientFromColor = true
+            this.node.gradientFromColorShow = true
         }
     },
     methods:{
@@ -232,6 +326,10 @@ export default {
             obj[e.split(',')[0]] = e.split(',')[1]
             this.line[e.split(',')[0]] = e.split(',')[1]
             this.$eventBus.$emit('setPen',obj)
+        },
+        backColorTypeChange(e){
+            console.log(e)
+            this.setPen('bkType')
         }
     }
 }
@@ -287,7 +385,7 @@ export default {
 /deep/ .el-input__inner{
     padding: 0px!important;
 }
-/deep/ .el-input-number{
+/deep/ .el-input-number,.el-select{
     width: 125px!important;
 }
 </style>
