@@ -2,19 +2,22 @@
   <div class="menu">
     <div>
       <span>
-        <div class="demo-basic--circle">
-          <div class="block">
-            <el-avatar :size="30" :src="circleUrl"></el-avatar>
-          </div>
-        </div>
-      </span>
-      <span>
-        <a class="menubox"
+        <a @click="save" class="menubox"
           ><div class="icon">
             <i class="t-icon t-save"></i
             ><!---->
           </div>
-          <div @click="save">保存</div>
+          <div >保存</div>
+          <!----></a
+        >
+      </span>
+      <span>
+        <a  @click="download" class="menubox"
+          ><div class="icon">
+            <i class="t-icon t-save"></i
+            ><!---->
+          </div>
+          <div >下载</div>
           <!----></a
         >
       </span>
@@ -84,18 +87,30 @@
         
       </span>
     </div>
-    <div>xx</div>
+    <div class="barright">
+      <span>
+        <div @click="login" class="demo-basic--circle">
+          <div class="block"><el-avatar :size="30" :src="userInfo.avatar" ></el-avatar></div>
+        </div>
+      </span>
+      <login ref="login" @loginSuccess="loginSuccess" />
+    </div>
   </div>
 </template>
 <script>
+import login from './login.vue'
 export default {
+  components:{
+    login
+  },
   name: "menuBar",
   data() {
     return {
       circleUrl:
         "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
       unlock: false,
-      scale:1
+      scale:1,
+      userInfo:localStorage.getItem('userInfo')?JSON.parse(localStorage.getItem('userInfo')):{}
     };
   },
   mounted(){
@@ -104,6 +119,20 @@ export default {
     });
   },
   methods: {
+    loginSuccess(e){
+      this.userInfo = e
+    },
+    login(){
+      if(localStorage.getItem('userInfo')){
+        this.$message({
+          message: '您已经登录',
+          type: 'warning'
+        });
+      }else{
+        this.$refs.login.open()
+      }
+      
+    },
     unlockClick() {
       this.unlock = !this.unlock;
       if(this.unlock){
@@ -148,6 +177,9 @@ export default {
     save(){
       this.$eventBus.$emit('saveTopo')
     },
+    download(){
+      this.$eventBus.$emit('download')
+    },
     test(e){
       console.log(e)
     }
@@ -167,6 +199,14 @@ export default {
     justify-content: space-around;
     width: 100%;
   }
+  .barright{
+    display: flex;
+    padding: 0px 20px;
+    justify-content: flex-end;
+    .demo-basic--circle{
+      cursor: pointer;
+    }
+  }
   .menubox {
     cursor: pointer;
     .warning {
@@ -185,4 +225,5 @@ export default {
                 cursor: pointer;
           }
 }
+
 </style>

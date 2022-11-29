@@ -21,12 +21,24 @@ import menuBar from '@/components/menuBar.vue'
 import editor from '@/components/editor.vue'
 import sibar from '@/components/LeftSidebar.vue'
 import rightsite from '@/components/rightsite.vue'
+import {detail} from '@/api/drawing.js'
 export default {
   name: 'Home',
   components: {
     editor,
     sibar,
     menuBar,rightsite
+  },
+  async mounted(){
+    const {drawingId} = this.$route.query
+    console.log(this.$route.query,'===this.$route===')
+    if(drawingId){
+      let res = await detail({drawingId})
+      console.log(res)
+      if(res.code==200){
+        this.$eventBus.$emit('openJson',res.data)
+      }
+    }
   }
 }
 </script>

@@ -209,6 +209,9 @@
                     <el-collapse-item title="文字" name="2">
                         <text-t :data="data" />
                     </el-collapse-item>
+                    <el-collapse-item title="图片" name="2">
+                        <text-t :data="data" />
+                    </el-collapse-item>
         </el-collapse>
         <sketchColor ref="sketchColor" @sketchColorSubmit="sketchColorSubmit" @sketchColorcancle="sketchColorcancle" />
     </div>

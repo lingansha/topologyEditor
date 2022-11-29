@@ -4,7 +4,7 @@
             <nodeInfo :data="active[0]" />
         </template>
         <template v-else>
-            <sysInfo />
+            <sysInfo :topology="topology" />
         </template>
     </div>
 </template>
@@ -18,14 +18,19 @@ export default {
     name:'rightsite',
     data(){
         return{
-            active:[]
+            active:[],
+            topology:{}
+        }
+    },
+    watch:{
+        '$store.state.common.topology.store.active':{
+            handler:function(){
+                this.active = this.$store.state.common.topology.store.active
+                this.topology = this.$store.state.common.topology
+            },
         }
     },
     mounted(){
-        this.$eventBus.$on('activeDataReflash',(obj)=>{
-            console.log(obj,'==activeDataReflash==')
-            this.active = obj
-        })
     },
     beforeDestroy(){
         this.$eventBus.$off('activeDataReflash')

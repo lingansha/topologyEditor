@@ -18,6 +18,11 @@ export default {
         activeName:'first'
     }
   },
+  computed: {
+    topology: function () {
+      return this.$store.getters.topology;
+    },
+  },
   methods:{
     handleClick(){
         

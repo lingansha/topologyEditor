@@ -14,6 +14,7 @@
     "@topology/core": "^1.2.14",
     "@topology/flow-diagram": "^1.1.1",
     "@topology/sequence-diagram": "^1.1.0",
+    "axios": "^1.2.0",
     "babel-polyfill": "^6.26.0",
     "classlist-polyfill": "^1.2.0",
     "core-js": "^3.6.5",

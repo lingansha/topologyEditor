@@ -49,7 +49,7 @@ export default {
   created() {
     console.log(defalutMaterials);
     this.data = defalutMaterials;
-  },
+  }
 };
 </script>
 <style lang="scss" scoped>
