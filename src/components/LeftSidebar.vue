@@ -2,16 +2,18 @@
   <div class="LeftSidebar">
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="系统组件" name="first"><systemCom /></el-tab-pane>
-      <el-tab-pane label="我的组件" name="second">我的组件</el-tab-pane>
+      <el-tab-pane label="我的组件" name="second"><myMenu /></el-tab-pane>
     </el-tabs>
   </div>
 </template>
 <script>
 import systemCom from "./components/systemComponents.vue"
+import myMenu from "./components/customizeComponentMenu.vue"
 export default {
   name: "LeftSidebar",
   components:{
-    systemCom
+    systemCom,
+    myMenu
   },
   data(){
     return{
@@ -30,3 +32,10 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+
+/deep/.el-tabs__header{
+    margin-bottom: 0px!important;
+}
+
+</style>

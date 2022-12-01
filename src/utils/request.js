@@ -13,7 +13,9 @@ const service = axios.create({
 service.interceptors.request.use(
     config => {
         // 让每个请求携带自定义token 请根据实际情况自行修改
-        // config.headers['Authorization'] = token
+        if(localStorage.getItem('userInfo')){
+          config.headers['Authorization'] = 'bearer '+JSON.parse(localStorage.getItem('userInfo')).token
+        }
         return config;
     },
     error => {
@@ -49,6 +51,7 @@ service.interceptors.response.use(
         }
     },
     error => {
+      console.log(error,'==response==')
         if(error.response.status==401){
           Message({
             message: '登录失效',

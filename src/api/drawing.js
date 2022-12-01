@@ -8,6 +8,13 @@ export function save(data) {
         data: data,
     })
 }
+export function update(data) {
+    return request({
+        url: '/api/drawing/update',
+        method: 'post',
+        data: data,
+    })
+}
 export function detail(params) {
     return request({
         url: '/api/drawingsee/detail',

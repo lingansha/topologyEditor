@@ -1,6 +1,6 @@
 <template>
   <div class="contaner">
-    <el-collapse v-if="data.name == 'line'" v-model="activeNames" accordion>
+    <el-collapse v-model="activeNames" accordion>
       <el-collapse-item title="动画" name="1">
         <div>
           <div class="combox">
