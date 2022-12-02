@@ -1,6 +1,5 @@
 import request from '@/utils/request' // 引入封装的request.js文件
 // 暴露出我们的接口请求,export导出
-// 登录接口
 export function save(data) {
     return request({
         url: '/api/drawing/save',
@@ -20,5 +19,37 @@ export function detail(params) {
         url: '/api/drawingsee/detail',
         method: 'get',
         params: params,
+    })
+}
+//创建动画
+export function createAnimate(params) {
+    return request({
+        url: '/api/system/customize_component_menu/create_animate',
+        method: 'post',
+        data: params,
+    })
+}
+//获取动画列表
+export function getAnimateList(params) {
+    return request({
+        url: '/api/system/customize_component_menu/animate_list',
+        method: 'get',
+        params: params,
+    })
+}
+//获取动画列表分页
+export function getAnimateListPage(params) {
+    return request({
+        url: '/api/system/customize_component_menu/animate_list_page',
+        method: 'get',
+        params: params,
+    })
+}
+//删除动画
+export function deleteAnimate(params) {
+    return request({
+        url: '/api/system/customize_component_menu/delete_animate',
+        method: 'post',
+        data: params,
     })
 }

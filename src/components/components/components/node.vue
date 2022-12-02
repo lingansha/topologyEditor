@@ -34,6 +34,16 @@
                                     </div>
                             </div>
                             <div class="combox">
+                                    <span>
+                                        进度垂直
+                                    </span>
+                                    <span>
+                                        <el-switch
+                                        v-model="node.verticalProgress"  @change="setPen('verticalProgress')">
+                                        </el-switch>
+                                    </span>
+                                </div>
+                            <div class="combox">
                                     <div class="setcolor">
                                         <span>
                                             Y

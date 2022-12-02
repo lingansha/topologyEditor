@@ -97,10 +97,12 @@ export default {
     //播放动画
     this.$eventBus.$on("startAnimate", (penid) => {
       this.topology.startAnimate(penid);
+      this.topology.inactive();
     });
     //暂停动画
     this.$eventBus.$on("pauseAnimate", (penid) => {
       this.topology.pauseAnimate(penid);
+      this.topology.inactive();
     });
     //结束动画
     this.$eventBus.$on("stopAnimate", (penid) => {
@@ -160,7 +162,6 @@ export default {
     //     that.$eventBus.$emit("activeDataReflash", that.active);
     //   };
     // })(this.topology.canvas.onMouseUp);
-
     const params = {
       mqtt: "ws://139.159.142.8:30061/mqtt",
       mqttTopics: "topic1/xxx", // 多个主题用,分割
@@ -173,25 +174,12 @@ export default {
         customClientId: false,
       },
     };
-
     // 方式1
     this.topology.connectMqtt(params);
     this.topology.socketFn = (message, topic) => {
       // Do sth
       console.log(message, topic);
     };
-    const pen = {
-      name: "rectangle",
-      text: "矩形",
-      x: 100,
-      y: 100,
-      width: 100,
-      height: 100,
-      progress: 0.8,
-      // progressColor: 'green',
-    };
-    topology.addPen(pen);
-    topology.inactive();
     document.getElementsByTagName("canvas")[1].style.left = 0;
     this.topology.inactive();
   },
@@ -306,7 +294,7 @@ export default {
       };
       console.log(this.topology, "==this.topology==");
       console.log(obj, "==obj==");
-      this.saveJSON(obj, "测试.json");
+      this.saveJSON(obj,obj.name?obj.name+'.json':Date.parse(new Date())+'.json');
     },
     saveJSON(data, filename) {
       if (!data) {

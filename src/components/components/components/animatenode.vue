@@ -1,6 +1,7 @@
 <template>
   <div class="contaner">
-    <el-collapse v-model="activeNames" accordion>
+    <customAnimate :data="data" :key="data.id" v-if="editorAnimateShow" @addAnimateCompelte="addAnimateCompelte" @back="back" />
+    <el-collapse v-model="activeNames" accordion v-else>
       <el-collapse-item title="动画" name="1">
         <div>
           <div class="combox">
@@ -21,6 +22,33 @@
               </el-select>
             </span>
           </div>
+          <template v-if="animate.animateType==6">
+            <div class="combox" >
+                <span> 自定义编辑 </span>
+                <span>
+                  <a class="editorAnimate" @click="editorAnimate">编辑动画</a>
+                </span>
+            </div>
+            <div class="combox">
+            <span> 自定义动画 </span>
+            <span>
+              <el-select
+                v-model="customAnimateType"
+                placeholder="请选择"
+                @change="customAnimateSelect"
+              >
+                <el-option
+                  v-for="item in customAnimateList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                >
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+          </template>
+         
           <div class="combox" v-if="animate.animateType==5">
             <span> 进度方向 </span>
             <span>
@@ -87,10 +115,13 @@
 </template>
 <script>
 import sketchColor from "./components/sketchColor.vue";
+import customAnimate from "./components/customAnimate.vue"
+import {getAnimateList} from "@/api/drawing.js"
 export default {
   name: "animatenode",
   components: {
     sketchColor,
+    customAnimate
   },
   props: {
     data: {
@@ -135,6 +166,10 @@ export default {
           value: 5,
           label: "进度",
         },
+        {
+          value: 6,
+          label: "自定义",
+        }
       ],
       verticalProgressType:[
       {
@@ -147,9 +182,16 @@ export default {
         },
       ],
       play: false,
+      editorAnimateShow:false,
+      customAnimateType:undefined,
+      customAnimateList:[]
     };
   },
   mounted() {
+      const{customAnimateType} = this.data
+      if(customAnimateType){
+        this.customAnimateType = customAnimateType
+      }
       for (let key in this.data) {
         for (let key2 in this.animate) {
           if (key == key2) {
@@ -165,8 +207,34 @@ export default {
           }
         }
       }
+      this.addAnimateCompelte()
   },
   methods: {
+    back(){
+      this.editorAnimateShow = false
+      this.addAnimateCompelte()
+    },
+    async addAnimateCompelte(){
+      let res = await getAnimateList()
+        console.log(res)
+        if(res.code==200){
+          this.customAnimateList = res.data
+        }
+    },
+    customAnimateSelect(e){
+      // this.animate.autoPlay = false
+      // this.setPen('autoPlay')
+      // this.stopPlay()
+      console.log(e)
+      this.data.customAnimateType = e
+      for(let data of this.customAnimateList){
+        if(data.id == e){
+          this.data.frames = data.frames;
+          break;
+        }
+      }
+      
+    },
     verticalProgressChange(e){
       let obj = { id: this.data.id };
       if(e){
@@ -177,7 +245,7 @@ export default {
         this.$eventBus.$emit("setPen", obj);
       }
     },
-    animateSelect(e) {
+    async animateSelect(e) {
       this.setPen('animateType')
       if (e == 0) {
         //上下跳动
@@ -282,6 +350,21 @@ export default {
         }
         this.data.frames = arr;
       }
+      if(e==6){
+        let res = await getAnimateList()
+        console.log(res)
+        if(res.code==200){
+          this.customAnimateList = res.data
+        }
+      }
+      if(e==7){
+        this.data.frames= [
+                {
+                    "duration": 2000,
+                     "textLeft":100,
+                },
+            ]
+      }
     },
     setPen(key) {
       let obj = { id: this.data.id };
@@ -332,6 +415,10 @@ export default {
       this.animate.animateDotSize = e;
       this.$eventBus.$emit("setPen", { id: this.data.id, animateDotSize: e });
     },
+    editorAnimate(){
+      console.log("editorAnimate")
+      this.editorAnimateShow = !this.editorAnimateShow
+    }
   },
 };
 </script>
@@ -345,7 +432,12 @@ export default {
     margin-right: 20px;
   }
   span:first-child {
-    width: 70px;
+    text-align: left;
+    width: 90px;
+  }
+  .editorAnimate{
+    cursor: pointer;
+    color: #096dd9;
   }
 }
 .styleLine {

@@ -49,6 +49,7 @@ export default {
 .bodys{
   display: flex;
   justify-content: space-between;
+  height: 88vh;
   .left{
     width: 15%;
     min-width: 200px;
