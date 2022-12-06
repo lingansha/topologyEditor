@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@topology/activity-diagram": "^1.1.0",
-    "@topology/chart-diagram": "^1.2.10",
+    "@topology/chart-diagram": "^1.2.7",
     "@topology/class-diagram": "^1.1.0",
     "@topology/core": "^1.2.14",
     "@topology/flow-diagram": "^1.1.1",

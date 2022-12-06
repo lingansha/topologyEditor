@@ -7,6 +7,7 @@ const env = 'dev' // 当前使用环境
 
 module.exports = {
   //路径前缀
+  lintOnSave: false,
   publicPath: "/",
   //开发模式反向代理配置，生产模式请使用Nginx部署并配置反向代理
   devServer: {

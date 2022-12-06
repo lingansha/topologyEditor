@@ -45,6 +45,16 @@
             </span>
           </div>
           <div class="combox">
+                  <span>
+                      是否缩放
+                  </span>
+                  <span>
+                      <el-switch
+                      v-model="scale">
+                      </el-switch>
+                  </span>
+              </div>
+          <div class="combox" v-if="scale">
               <span> 缩放</span>
               <span>
                 <el-input-number
@@ -340,7 +350,8 @@ export default {
           name: [
             { required: true, message: '请输入动画名称', trigger: 'blur' },
           ]
-        }
+        },
+        scale:false
     };
   },
   methods: {
@@ -366,20 +377,19 @@ export default {
             textTop,
             progressColor,
             globalAlpha,
+            scale,
             fontSize,
             lineHeight,
             fontWeight,
             progress,
-            scale,
             } = add
-      this.animateList.push({
+            let obj = {
             duration:500,
             x:0,
             y:0,
             rotate,
             lineDash:lineDash?lineDash:[],
             color,
-            scale:scale?scale:1,
             lineWidth,
             progress:progress?progress:0,
             progressColor,
@@ -393,7 +403,11 @@ export default {
             lineHeight,
             textLeft:textLeft?textLeft:0,
             textTop:textTop?textTop:0
-        });
+        }
+        if(this.scale){
+          obj.scale = scale?scale:1
+        }
+      this.animateList.push(obj);
     },
     deleteAnimate(ind) {
       this.animateList.splice(ind, 1);

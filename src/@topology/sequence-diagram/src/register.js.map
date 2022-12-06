@@ -1,0 +1,1 @@
+{"version":3,"file":"register.js","sourceRoot":"","sources":["../../../packages/sequence-diagram/src/register.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,KAAK,EAAE,MAAM,SAAS,CAAC;AAChC,OAAO,EAAE,QAAQ,EAAE,MAAM,YAAY,CAAC;AAEtC,MAAM,UAAU,YAAY;IAI1B,OAAO;QACL,aAAa,EAAE,KAAK;KACrB,CAAC;AACJ,CAAC;AACD,MAAM,UAAU,iBAAiB;IAC/B,OAAO;QACL,QAAQ,UAAA;KACT,CAAC;AACJ,CAAC"}

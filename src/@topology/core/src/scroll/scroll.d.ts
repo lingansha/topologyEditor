@@ -1,0 +1,32 @@
+import { Canvas } from '../canvas';
+import { Rect } from '../rect';
+export declare class Scroll {
+    parent: Canvas;
+    h: HTMLElement;
+    v: HTMLElement;
+    isDownH: number;
+    isDownV: number;
+    x: number;
+    y: number;
+    hSize: number;
+    vSize: number;
+    scrollX: number;
+    scrollY: number;
+    lastScrollX: number;
+    lastScrollY: number;
+    rect: Rect;
+    isShow: boolean;
+    constructor(parent: Canvas);
+    init(): void;
+    private onMouseDownH;
+    private onMouseDownV;
+    private onMouseMove;
+    private onMouseUp;
+    initPos(): void;
+    resize(): void;
+    show(): void;
+    hide(): void;
+    translate(x: number, y: number): void;
+    wheel(up?: boolean): void;
+    destroy(): void;
+}
