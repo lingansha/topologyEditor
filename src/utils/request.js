@@ -31,6 +31,7 @@ service.interceptors.response.use(
         // return response;
         // // 未设置状态码则默认成功状态
         const code = response.data.code || 200;
+        
         // 获取错误信息
         const errorCode = {
             '401': '认证失败，无法访问系统资源',
@@ -42,6 +43,10 @@ service.interceptors.response.use(
         if (code === 500) {
             return Promise.reject(new Error(msg))
         }else if (code == 401) {
+         Message({
+                message: "认证失败！",
+                type: 'error'
+         });
           return response.data
         } else if (code !== 200) {
             return Promise.reject('error')

@@ -1,7 +1,7 @@
 <template>
     <div class="drawingConfiguration">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="图纸" name="1"><drawinginfo /></el-tab-pane>
+            <el-tab-pane label="图纸" name="1"><drawinginfo  /></el-tab-pane>
             <el-tab-pane label="通信" name="2">通信</el-tab-pane>
             <el-tab-pane label="图层" name="3"><layer /></el-tab-pane>
         </el-tabs>

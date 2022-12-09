@@ -96,14 +96,6 @@
               >{{ play ? "暂停" : "播放" }}</el-button
             >
             <el-button
-              @click="handlePlayx"
-              >播放</el-button
-            >
-            <el-button
-              @click="handleStop"
-              >停止</el-button
-            >
-            <el-button
               type="primary"
               size="small"
               icon="el-icon-c-scale-to-original"
@@ -111,10 +103,6 @@
               >停止</el-button
             >
           </div>
-          <el-button
-              @click="customAnimatePause"
-              >暂停</el-button
-            >
         </div>
       </el-collapse-item>
     </el-collapse>
@@ -204,6 +192,9 @@ export default {
     };
   },
   mounted() {
+      if(this.data.animatePlay){
+        this.play = this.data.animatePlay
+      }
       const{customAnimateType} = this.data
       if(customAnimateType){
         this.customAnimateType = customAnimateType
@@ -377,8 +368,7 @@ export default {
         this.data.frames= [
                 {
                     "duration": 2000,
-                     "x":100,
-                     "y":100
+                     "progress":1,
                 },
             ]
       }
@@ -401,24 +391,19 @@ export default {
     handlePlay() {
       this.play = !this.play;
       if (this.play == true) {
+        this.data.animatePlay = true
         this.$eventBus.$emit("startAnimate", this.data.id);
       } else {
+        this.data.animatePlay = false
         this.$eventBus.$emit("pauseAnimate", this.data.id);
       }
     },
     handlePlayx(){
       this.$eventBus.$emit("customAnimateStart", this.data);
     },
-    handleStop(){
-      console.log("停止")
-      this.$eventBus.$emit("customAnimateStop", this.data);
-    },
     stopPlay() {
       this.play = false;
       this.$eventBus.$emit("stopAnimate", this.data.id);
-    },
-    customAnimatePause(){
-      this.$eventBus.$emit("customAnimatePause", this.data);
     },
     setColor(e) {
       this.$refs.sketchColor.open(e);

@@ -1,10 +1,11 @@
 <template>
     <div class="componentConfiguration">
         <el-tabs v-model="activeName" @tab-click="handleClick">
-            <el-tab-pane label="外观" name="1"><viewW :data="data"/></el-tab-pane>
+            <el-tab-pane label="外观" name="1"><viewW :key="data.id" :data="data"/></el-tab-pane>
             <el-tab-pane label="事件" name="2">事件</el-tab-pane>
             <el-tab-pane label="动画" name="3"><animate-x :data="data" :key="data.id" v-if="data.type == 1" /><animateN :data="data" :key="data.id" v-if="data.type == 0" /></el-tab-pane>
-            <el-tab-pane label="数据" name="4">数据</el-tab-pane>
+            <el-tab-pane label="数据" name="4"><dataEditor :key="data.id" :data="data" /></el-tab-pane>
+            <el-tab-pane label="通信" name="5"><communication :key="data.id" :data="data" /></el-tab-pane>
         </el-tabs>
     </div>
 </template>
@@ -12,12 +13,16 @@
 import viewW from './components/view.vue'
 import animateX from './components/animatex.vue'
 import animateN from './components/animatenode.vue'
+import communication from './components/communication.vue'
+import dataEditor from './components/dataEditor.vue'
 export default {
     name:'componentConfiguration',
     components:{
       viewW,
       animateX,
-      animateN
+      animateN,
+      communication,
+      dataEditor
     },
     data() {
       return {

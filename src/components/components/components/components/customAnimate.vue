@@ -75,7 +75,8 @@
                 ></el-input-number>
               </span>
           </div>
-          <div class="combox">
+          <template v-if="!scale">
+            <div class="combox">
               <span> X(px)</span>
               <span>
                 <el-input-number
@@ -94,6 +95,7 @@
                 ></el-input-number>
               </span>
           </div>
+          </template>
           <div class="combox">
               <span> 旋转(°) </span>
               <span>
@@ -385,8 +387,6 @@ export default {
             } = add
             let obj = {
             duration:500,
-            x:0,
-            y:0,
             rotate,
             lineDash:lineDash?lineDash:[],
             color,
@@ -406,6 +406,10 @@ export default {
         }
         if(this.scale){
           obj.scale = scale?scale:1
+        }else{
+          obj.x = 0
+          obj.y = 0
+
         }
       this.animateList.push(obj);
     },

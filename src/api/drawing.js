@@ -53,3 +53,11 @@ export function deleteAnimate(params) {
         data: params,
     })
 }
+//获取图片分页列表
+export function getImagesListPage(params) {
+    return request({
+        url: '/api/uploads/images_list_page',
+        method: 'get',
+        params: params,
+    })
+}

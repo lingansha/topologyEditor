@@ -1,14 +1,17 @@
 <template>
   <div class="custom-upload">
     <el-upload
+      ref="upload"
       :list-type="listType"
       :action="action"
       :on-success="onSuccess"
       :on-error="onError"
       :headers="headers"
+      :on-change="onChange"
       :file-list="customFileList"
       :class="{disabled: uploadDisabled}"
       v-bind="$attrs"
+      :auto-upload="autoUpload"
     >
       <i class="el-icon-plus" />
       <br />
@@ -80,6 +83,10 @@ export default {
     uploadText: {
       type: String,
       default() { return "" }
+    },
+    autoUpload: {
+      type: Boolean,
+      default() { return true }
     }
   },
   data() {
@@ -115,6 +122,21 @@ export default {
     this.setFileList(pic)
   },
   methods: {
+    onChange(file){
+      if(!this.check(file)){
+        this.customFileList.push(file)
+      }
+    },
+    check(file){
+      if(this.customFileList.length){
+        for(let data of this.customFileList){
+          if(data.uid==file.uid){
+            return true
+          }
+        }
+      }
+      return false
+    },
     setFileList(pic) {
       const customFileList = []
       if(pic){
@@ -167,10 +189,23 @@ export default {
     onSuccess(response, file) {
       //console.log(response)
       //console.log(file,'==file==')
-      // console.log(customFileList) 
+      // console.log(customFileList)
+      let lengthResponse = 0
       if(response.code===200) {
-        this.customFileList.push(file)
-        this.callbackFileList(this.customFileList)
+        for(let data of this.customFileList){
+          if(data.uid==file.uid){
+            data = file
+          }
+          if(data.response){
+            if(data.response.data.pathname){
+              lengthResponse++
+            }
+          }
+        }
+        console.log(lengthResponse,this.customFileList.length)
+        if(lengthResponse==this.customFileList.length){
+          this.callbackFileList(this.customFileList)
+        }
         return
       }
       this.$message.error(response.msg)
@@ -178,7 +213,11 @@ export default {
     onError() {
       /** 服务器异常，上传失败 **/
       this.$message.error('服务器异常，上传失败')
-    }
+    },
+    submitUpload() {
+        let res =  this.$refs.upload.submit();
+        console.log(res)
+    },
   }
 }
 </script>

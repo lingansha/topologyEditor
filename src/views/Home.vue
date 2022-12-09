@@ -50,6 +50,7 @@ export default {
   display: flex;
   justify-content: space-between;
   height: 88vh;
+  overflow: hidden;
   .left{
     width: 15%;
     min-width: 200px;
@@ -60,7 +61,9 @@ export default {
   }
   .rigth{
     width: 15%;
-    min-width: 260px;
+    min-width: 350px;
+    height: 88vh;
+    overflow-y: auto;
   }
 }
 </style>

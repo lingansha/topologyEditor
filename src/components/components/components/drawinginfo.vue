@@ -15,18 +15,23 @@
     <div class="combox">
       <div class="setcolor">
         <span> 背景图片 </span>
-        <span class="colorInput"
-          ><el-input
-            v-model="drawinginfo.bkImage"
-            placeholder="请输入网址"
-            @change="setbackImg('bkImage')"
-          ></el-input
-        ></span>
+        <span class="icon" @click="selectBgimg">
+          <div class="new-item-badge" v-if="drawinginfo.bkImage" @click.stop="subumitSelectImg('')">
+            <i class="el-icon-close"></i>
+          </div>
+          <el-image
+            style="width: 50px; height: 50px"
+            v-if="drawinginfo.bkImage"
+            :src="drawinginfo.bkImage"
+            fit="fit"
+          ></el-image>
+          <i v-else class="el-icon-picture-outline" style="font-size: 24px"></i>
+        </span>
       </div>
     </div>
     <div class="combox">
       <div class="setcolor">
-        <span> 开始颜色 </span>
+        <span> 背景颜色 </span>
         <span>
           <span
             @click="setColor('background')"
@@ -46,14 +51,22 @@
       <div class="setcolor">
         <span> 背景网格 </span>
         <span class="colorInput"
-          ><el-checkbox v-model="drawinginfo.grid" @change="setGrid('grid')"></el-checkbox></span>
+          ><el-checkbox
+            v-model="drawinginfo.grid"
+            @change="setGrid('grid')"
+          ></el-checkbox
+        ></span>
       </div>
     </div>
     <div class="combox">
       <div class="setcolor">
         <span> 标尺 </span>
         <span class="colorInput"
-          ><el-checkbox v-model="drawinginfo.rule" @change="setRule('rule')"></el-checkbox></span>
+          ><el-checkbox
+            v-model="drawinginfo.rule"
+            @change="setRule('rule')"
+          ></el-checkbox
+        ></span>
       </div>
     </div>
     <sketchColor
@@ -61,13 +74,21 @@
       @sketchColorSubmit="sketchColorSubmit"
       @sketchColorcancle="sketchColorcancle"
     />
+    <selectimg
+      ref="selectimg"
+      v-if="showSelectImg"
+      @close="showSelectImg = false"
+      @subumitSelectImg="subumitSelectImg"
+    />
   </div>
 </template>
 <script>
 import sketchColor from "./components/sketchColor.vue";
+import selectimg from "./selectImage.vue";
 export default {
   components: {
     sketchColor,
+    selectimg,
   },
   computed: {
     topology: function () {
@@ -80,47 +101,61 @@ export default {
         name: "",
         bkImage: "",
         background: "",
-        grid:true,
-        rule:true
+        grid: true,
+        rule: true,
       },
+      showSelectImg: false,
     };
   },
-  mounted() {},
+  mounted() {
+    if(this.topology.data().bkImage){
+      this.drawinginfo.bkImage = this.topology.data().bkImage
+    }
+  },
   methods: {
+    subumitSelectImg(e) {
+      this.drawinginfo.bkImage = e;
+      this.topology.setBackgroundImage(e);
+      this.showSelectImg = false;
+    },
+    selectBgimg() {
+      this.showSelectImg = true;
+      this.$nextTick(() => {
+        this.$refs.selectimg.open();
+      });
+    },
     setData(key) {
       this.topology.store.data[key] = this.drawinginfo[key];
       setTimeout(() => {
         console.log(this.topology, "==this.topology==");
       }, 2000);
     },
-    setRule(key){
-        this.topology.setRule({
-            rule: this.drawinginfo[key]
-        });
+    setRule(key) {
+      this.topology.setRule({
+        rule: this.drawinginfo[key],
+      });
     },
-    setGrid(key){
-        this.topology.setGrid({
-            grid: this.drawinginfo[key]
-        });
+    setGrid(key) {
+      this.topology.setGrid({
+        grid: this.drawinginfo[key],
+      });
     },
     setPen(key) {
-      let obj = {}
-      obj[key] = this.drawinginfo[key]
-      console.log(obj)
+      let obj = {};
+      obj[key] = this.drawinginfo[key];
+      console.log(obj);
       this.topology.setOptions(obj);
     },
-    setbackImg(key){
-        this.setData(key)
-        document.getElementById('topology').getElementsByTagName('canvas')[0].style.backgroundImage = 'url("'+this.drawinginfo[key]+'")'
-    },
-    setColor(e){
-        this.$refs.sketchColor.open(e)
+    setColor(e) {
+      this.$refs.sketchColor.open(e);
     },
     sketchColorSubmit(e) {
       console.log(e);
       this.drawinginfo[e.key] = e.color;
-      this.setData('background')
-      document.getElementById('topology').getElementsByTagName('canvas')[0].style.background = e.color
+      if (e.key == "background") {
+        this.topology.setBackgroundColor(this.drawinginfo[e.key]);
+        this.topology.render();
+      }
       this.$refs.sketchColor.handleClose();
     },
     sketchColorcancle() {
@@ -179,6 +214,37 @@ export default {
   > span:first-child {
     width: 100px;
   }
+  .icon {
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      .new-item-badge {
+        position: absolute;
+        background: red;
+        z-index: 999;
+        width: 56px;
+        text-align: center;
+        height: 20px;
+        line-height: 50px;
+        border-radius: 3px;
+        color: #fff;
+        font-size: 12px !important;
+        padding: 2px 4px 0;
+        top: -16px;
+        right: -32px;
+        transform: rotate(45deg);
+        transition: transform 0.1s ease-in;
+        padding-bottom: 11px;
+        .el-icon-close {
+          -ms-transform: rotate(-45deg);
+          -webkit-transform: rotate(-45deg);
+          transform: rotate(-45deg);
+          font-size: 14px;
+          margin-bottom: -5px;
+          cursor: pointer;
+        }
+}
+  }
 }
 /deep/ .el-input__inner {
   padding: 0px !important;
@@ -187,4 +253,5 @@ export default {
 .el-select {
   width: 125px !important;
 }
+
 </style>
