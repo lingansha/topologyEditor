@@ -125,3 +125,19 @@ export const getPenAuthInfoParmas = (pen) => {
             }
             return obj
   }
+
+  export const getTopic = (pen)=>{
+    let string = ''
+    if(pen.communication){
+        if(pen.communication.Interface){
+            if(pen.communication.Interface.InterfaceList){
+                for(let data of pen.communication.Interface.InterfaceList){
+                    string = string + '/' + data[data.field.bindCodeField]
+                }
+                string = string.slice(1)
+            }
+        }
+    }
+    return string
+  }
+  

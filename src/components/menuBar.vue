@@ -50,6 +50,14 @@
           {{ unlock ? "已锁定" : "已解锁" }}
         </div>
       </span>
+      <span class="menubox" @click="unlockClick2">
+        <div>
+          <i :class="`t-icon ${unlock2 ? 't-lock warning' : 't-unlock'}`"></i>
+        </div>
+        <div :class="`${unlock2 ? 'warning' : ''}`">
+          {{ unlock2 ? "已锁定(可触发)" : "已解锁(可触发)" }}
+        </div>
+      </span>
       <span class="menubox">
         <div>
           <el-dropdown>
@@ -109,6 +117,7 @@ export default {
       circleUrl:
         "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
       unlock: false,
+      unlock2: false,
       scale:1,
       userInfo:localStorage.getItem('userInfo')?JSON.parse(localStorage.getItem('userInfo')):{}
     };
@@ -137,6 +146,14 @@ export default {
       this.unlock = !this.unlock;
       if(this.unlock){
         this.$eventBus.$emit('onLocker')
+      }else{
+        this.$eventBus.$emit('unLocker')
+      }
+    },
+    unlockClick2() {
+      this.unlock2 = !this.unlock2;
+      if(this.unlock2){
+        this.$eventBus.$emit('onLocker2')
       }else{
         this.$eventBus.$emit('unLocker')
       }

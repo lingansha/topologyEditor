@@ -114,8 +114,11 @@ export default {
   },
   methods: {
     subumitSelectImg(e) {
+      console.log(e,'==e==')
       this.drawinginfo.bkImage = e;
+      this.topology.setBackgroundColor('');
       this.topology.setBackgroundImage(e);
+      console.log(this.topology,'==this.topology==')
       this.showSelectImg = false;
     },
     selectBgimg() {

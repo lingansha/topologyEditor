@@ -1,5 +1,30 @@
 <template>
   <div class="communication">
+    <div class="save">
+      <div>
+        <span>启用模板:</span>
+        <span>
+          <el-select v-model="communicationVlue" placeholder="请选择" @change="communicationSelectChange">
+            <el-option
+              v-for="item in communicationList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
+        </span>
+      </div>
+      <div>
+        <span>保存当前配置为模板:</span>
+        <span>
+          <el-button type="primary" @click="saveCommunication(data)"
+          >保存</el-button
+        >
+        </span>
+        
+      </div>
+    </div>
     <el-collapse v-model="activeName" accordion>
       <el-collapse-item title="鉴权" name="1">
         <el-form
@@ -128,7 +153,7 @@
               >
             </span>
           </div>
-          <div class="parmasbody" v-if="data.communication.Interface" >
+          <div class="parmasbody" v-if="data.communication.Interface">
             <div v-for="(item, ind) in Interface.InterfaceList" :key="ind">
               <div class="box">
                 <span>
@@ -152,8 +177,12 @@
               <div class="box">
                 <span>传参类型</span>
                 <span>
-                  <el-radio v-model="item.pramasType" label="pramas">pramas</el-radio>
-                  <el-radio v-model="item.pramasType" label="data">data</el-radio>
+                  <el-radio v-model="item.pramasType" label="pramas"
+                    >pramas</el-radio
+                  >
+                  <el-radio v-model="item.pramasType" label="data"
+                    >data</el-radio
+                  >
                 </span>
               </div>
               <div class="box">
@@ -264,9 +293,9 @@
                       size="mini"
                       icon="el-icon-plus"
                       @click="addPamarsExtraParmas(item)"
-                      >添加</el-button>
-                    </span
-                  >
+                      >添加</el-button
+                    >
+                  </span>
                 </div>
                 <div class="parmasbody">
                   <div
@@ -315,10 +344,34 @@
         </div>
       </el-collapse-item>
     </el-collapse>
+    <el-dialog
+      title="保存通信信息为模板"
+      :visible.sync="dialogVisible"
+      width="30%"
+      :before-close="handleClose"
+      :append-to-body="true"
+    >
+      <el-form
+        :model="ruleForm"
+        :rules="rules"
+        ref="ruleForm"
+        label-width="160px"
+        class="demo-ruleForm"
+      >
+        <el-form-item label="通信信息模板名称" prop="name">
+          <el-input v-model="ruleForm.name"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitForm">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
 import { proxyRequest } from "@/api/proxy.js";
+import { saveCommunication as save, communicationList } from "@/api/drawing.js";
 import { getPenAuthInfoParmas } from "@/utils/util";
 export default {
   name: "communication",
@@ -346,7 +399,12 @@ export default {
         this.Interface = this.data.communication.Interface;
       }
     }
-    console.log(this.data,'===communication==')
+    console.log(this.data, "===communication==");
+  },
+  computed:{
+        topology:function(){
+            return this.$store.getters.topology
+        }
   },
   data() {
     return {
@@ -370,11 +428,34 @@ export default {
           label: "请求头信息",
         },
       ],
-      extraParmas:[],
+      extraParmas: [],
       InterfaceType: "list",
+      dialogVisible: false,
+      ruleForm: {
+        name: "",
+      },
+      rules: {
+        name: [
+          {
+            required: true,
+            message: "请输入通信信息模板名称",
+            trigger: "blur",
+          },
+          { min: 3, max: 10, message: "长度在 3 到 5 个字符", trigger: "blur" },
+        ],
+      },
+      communicationList: [],
+      communicationVlue: "",
     };
   },
   methods: {
+    async init() {
+      let res = await communicationList();
+      console.log(res, "===communicationList===");
+      if(res.code==200){
+        this.communicationList = res.data
+      }
+    },
     change(key) {
       this.data.communication.authentication[key] = this.authentication[key];
       console.log(this.data);
@@ -419,14 +500,14 @@ export default {
           url: "",
           type: "list", //树结构，或者分页列表
           method: "post",
-          pramasType:'data',
+          pramasType: "data",
           field: {
             dataField: "data",
             listField: "",
             totalField: "total",
-            relationField:'id',
-            lastRelationField:'id',
-            searchRelationField:''
+            relationField: "id",
+            lastRelationField: "id",
+            searchRelationField: "",
           },
           parmas: {
             current: "current",
@@ -436,23 +517,81 @@ export default {
         });
       }
       this.data.communication.Interface = this.Interface;
-      console.log(this.data.communication,'==this.data.communication.Interface==')
-      this.$forceUpdate()
+      console.log(
+        this.data.communication,
+        "==this.data.communication.Interface=="
+      );
+      this.$forceUpdate();
     },
-    addPamarsExtraParmas(item){
-        this.extraParmas.push({
+    addPamarsExtraParmas(item) {
+      this.extraParmas.push({
         type: "",
         name: "",
         value: "",
-      })
-      item.parmas.extraParmas = this.extraParmas
-      this.$forceUpdate()
+      });
+      item.parmas.extraParmas = this.extraParmas;
+      this.$forceUpdate();
+    },
+    saveCommunication(e) {
+      console.log(e);
+      this.dialogVisible = true;
+    },
+    handleClose() {
+      this.dialogVisible = false;
+    },
+    submitForm() {
+      this.$refs.ruleForm.validate(async (valid) => {
+        if (valid) {
+          console.log(this.data, "===this.data===");
+          if (
+            this.data.communication &&
+            Object.keys(this.data.communication).length
+          ) {
+            let res = await save({name:this.ruleForm.name, data: this.data.communication });
+            console.log(res);
+            if (res.code == 200) {
+              this.$message.success("保存成功");
+              this.handleClose();
+            } else {
+              this.$message.error("保存失败");
+            }
+          }
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+    },
+    communicationSelectChange(e){
+      let obj = {}
+      for(let data of this.communicationList){
+        if(data.id==e){
+          obj = data.data
+        }
+      }
+      this.data.communication = obj
+      console.log(obj,'==obj==')
+      this.Interface = obj.Interface
+      this.authentication = obj.authentication
+      console.log(this.topology,'===this.topology===')
+      this.authTest()
     }
+  },
+  mounted() {
+    this.init()
   },
 };
 </script>
 <style lang="scss" scoped>
 .communication {
+  .save{
+    >div{
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
   .add {
     margin: 2px;
     .head {

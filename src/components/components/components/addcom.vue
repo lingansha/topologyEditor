@@ -36,7 +36,7 @@
       <el-form-item label="图片" prop="bgimage">
         <upload
           :pic="ruleForm.bgimage"
-          :limit="1"
+          :multiple="true"
           @callback-pic="handlePicFileList"
         />
       </el-form-item>
@@ -49,7 +49,7 @@
 </template>
 <script>
 import upload from "./Upload.vue";
-import {createComponent} from '@/api/mymenu.js'
+import {createComponentList} from '@/api/mymenu.js'
 export default {
   components: {
     upload,
@@ -105,6 +105,7 @@ export default {
           label: "image",
         },
       ],
+      imageList:[]
     };
   },
   methods: {
@@ -119,13 +120,20 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          const { name,text,bgimage,} = this.ruleForm
-          this.ruleForm.data ={
-            text,
-            name,
-            image:bgimage
+          
+          let list = []
+          for(let data of this.imageList){
+            const { name,text,bgimage,} = this.ruleForm
+            this.ruleForm.data ={
+              text,
+              name,
+              image:data
+            }
+            list.push({...this.ruleForm,
+              bgimage:data
+            })
           }
-          let res = await createComponent(this.ruleForm)
+          let res = await createComponentList({list})
           if(res.code==200){
             this.$message.success("添加成功")
             this.$emit('addComComplete')
@@ -142,7 +150,8 @@ export default {
     },
     handlePicFileList(file) {
         this.ruleForm.bgimage = file
-        console.log(this.ruleForm.bgimage,'===this.ruleForm.bgimage===')
+        this.imageList = file.split(",")
+        console.log(this.imageList,'===this.imageList===')
     },
   },
 };

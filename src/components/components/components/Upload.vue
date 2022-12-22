@@ -7,6 +7,7 @@
       :on-success="onSuccess"
       :on-error="onError"
       :headers="headers"
+      :multiple="multiple"
       :on-change="onChange"
       :file-list="customFileList"
       :class="{disabled: uploadDisabled}"
@@ -87,6 +88,10 @@ export default {
     autoUpload: {
       type: Boolean,
       default() { return true }
+    },
+    multiple:{
+      type: Boolean,
+      default() { return false }
     }
   },
   data() {

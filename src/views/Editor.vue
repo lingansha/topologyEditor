@@ -23,7 +23,7 @@ import sibar from '@/components/LeftSidebar.vue'
 import rightsite from '@/components/rightsite.vue'
 import {detail} from '@/api/drawing.js'
 export default {
-  name: 'Home',
+  name: 'Editor',
   components: {
     editor,
     sibar,

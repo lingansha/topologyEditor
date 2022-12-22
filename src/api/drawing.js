@@ -61,3 +61,20 @@ export function getImagesListPage(params) {
         params: params,
     })
 }
+//保存通信模板信息
+export function saveCommunication(params) {
+    return request({
+        url: '/api/drawing/saveCommunication',
+        method: 'post',
+        data: params,
+    })
+}
+//保存通信模板信息
+export function communicationList(params) {
+    return request({
+        url: '/api/drawing/communicationList',
+        method: 'get',
+        params: params,
+    })
+}
+

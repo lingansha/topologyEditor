@@ -2,7 +2,7 @@
     <div class="drawingConfiguration">
         <el-tabs v-model="activeName" @tab-click="handleClick">
             <el-tab-pane label="图纸" name="1"><drawinginfo  /></el-tab-pane>
-            <el-tab-pane label="通信" name="2">通信</el-tab-pane>
+            <el-tab-pane label="通信" name="2"><systemcom /></el-tab-pane>
             <el-tab-pane label="图层" name="3"><layer /></el-tab-pane>
         </el-tabs>
     </div>
@@ -10,10 +10,12 @@
 <script>
 import layer from "./components/layer.vue"
 import drawinginfo from './components/drawinginfo.vue'
+import systemcom from './components/systemcom.vue'
 export default {
     components:{
       layer,
-      drawinginfo
+      drawinginfo,
+      systemcom
     },
     name:'drawingConfiguration',
       props:{

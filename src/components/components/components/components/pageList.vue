@@ -6,6 +6,7 @@
     :before-close="handleClose">
     <el-table
       :data="list"
+      v-loading="loading"
       @row-click="singleElection"
       style="width: 100%">
       <el-table-column label="" width="65">
@@ -59,7 +60,8 @@ export default {
         page:{},
         total:0,
         list:[],
-        index:0
+        index:0,
+        loading:false
       };
     },
     methods: {
@@ -75,6 +77,7 @@ export default {
         this.dialogVisible = true
       },
       async init(){
+        this.loading = true
         let obj = getParmas(this.item,this.data,this.page,this.index)
         console.log(obj)
         let res = await proxyRequest(obj)
@@ -82,6 +85,7 @@ export default {
         if(res.code==200){
           this.getdata(res.data)
         }
+        this.loading = false
       },
       getdata(data){
         

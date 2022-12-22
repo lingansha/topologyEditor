@@ -1,7 +1,6 @@
 <template>
   <div class="hello">
     <div id="topology"></div>
-    <canvas id="test"></canvas>
   </div>
 </template>
 
@@ -21,7 +20,7 @@ import { classPens } from "@topology/class-diagram";
 import { register as registerEcharts } from "@topology/chart-diagram";
 import { update } from "@/api/drawing.js";
 import {proxyRequest} from "@/api/proxy.js"
-import {getPenAuthInfoParmas} from "@/utils/util"
+import {getPenAuthInfoParmas,getTopic} from "@/utils/util"
 export default {
   name: "HelloWorld",
   props: {
@@ -36,6 +35,7 @@ export default {
       topology: {},
       componentsData: {},
       active: [],
+      topicMap:{}
     };
   },
   watch:{
@@ -78,6 +78,11 @@ export default {
     this.$eventBus.$on("onLocker", () => {
       console.log("locker");
       this.topology.lock(10);
+    });
+    //锁定视图
+    this.$eventBus.$on("onLocker2", () => {
+      console.log("locker");
+      this.topology.lock(2);
     });
     //解锁视图
     this.$eventBus.$on("unLocker", () => {
@@ -159,12 +164,18 @@ export default {
       console.log("下载");
       this.download();
     });
-    //保存
+    //打开json
     this.$eventBus.$on("openJson", (json) => {
       console.log(json, "===json===");
       this.topology.clear();
       this.topology.open(json);
+      this.mqttInt()
+      this.topology.lock(0);
       this.topology.inactive();
+    });
+    //链接mqtt
+    this.$eventBus.$on("connectMqtt", (params) => {
+      this.mqttInt(params)
     });
     const topology = new Topology("topology", this.options);
     this.topology = topology;
@@ -203,30 +214,83 @@ export default {
     //     that.$eventBus.$emit("activeDataReflash", that.active);
     //   };
     // })(this.topology.canvas.onMouseUp);
-    const params = {
-      mqtt: "ws://139.159.142.8:30061/mqtt",
-      mqttTopics: "topic1/xxx", // 多个主题用,分割
-      mqttOptions: {
-        clientId: "string",
-        username: "12053a1195d34e90bc2ef50eea1832f7",
-        password: "fcae08f0d525478da5a91f8613698bf3",
-        // 如果clientId不为空，默认会随机重新生成一个clientId，避免连接冲突
-        // 如果设置customClientId=true，不随机生成，使用用户自定义的固定的clientId
-        customClientId: false,
-      },
-    };
-    // 方式1
-    this.topology.connectMqtt(params);
+    //mqtt推送回调数据处理
     this.topology.socketFn = (message, topic) => {
       // Do sth
       console.log(message, topic);
+      console.log(this.topicMap)
+      this.topology.setValue({id:this.topicMap[topic],text:JSON.parse(message).msg})
     };
+    //事件的action 对应的值
+    // enum EventAction {
+    //     Link,0
+    //     SetProps,1
+    //     StartAnimate,2
+    //     PauseAnimate,3
+    //     StopAnimate,4
+    //     Function,5
+    //     WindowFn,6
+    //     Emit,7
+    //   }
+    // 方式1
+    // 事件的示例
+    // const pen = {
+    //   id:"mypen",
+    //   name: "rectangle",
+    //   text: "矩形xxxxx",
+    //   x: 100,
+    //   y: 100,
+    //   width: 100,
+    //   height: 100,
+    //   events: [
+    //     {
+    //       name: "valueUpdate",
+    //       action: 5, // 执行动作
+    //       where:{
+    //                     "type": "comparison",
+    //                     "value": "7",
+    //                     "key": "text",
+    //                     "comparison": ">"
+    //       },
+    //       value: "2ds.le5le.com",
+    //       fn: ()=>{
+    //         console.log("test")
+    //       }
+    //     },
+    //   ],
+    // };
+    // var i = 0;
+    // setInterval(()=>{
+    //   i++
+    //   this.topology.setValue({id:"mypen",text:i});
+    // },5000)
+    //this.topology.addPen(pen);
     document.getElementsByTagName("canvas")[1].style.left = 0;
     this.topology.inactive();
   },
   beforeDestroy() {
     this.$eventBus.$off("dragstart");
     this.$eventBus.$off("onTouchstart");
+    this.$eventBus.$off("exitEditor");
+    this.$eventBus.$off("onLocker");
+    this.$eventBus.$off("onLocker2");
+    this.$eventBus.$off("unLocker");
+    this.$eventBus.$off("scale");
+    this.$eventBus.$off("fitView");
+    this.$eventBus.$off("undo");
+    this.$eventBus.$off("redo");
+    this.$eventBus.$off("cut");
+    this.$eventBus.$off("copy");
+    this.$eventBus.$off("paste");
+    this.$eventBus.$off("updateLineType");
+    this.$eventBus.$off("setPen");
+    this.$eventBus.$off("startAnimate");
+    this.$eventBus.$off("pauseAnimate");
+    this.$eventBus.$off("stopAnimate");
+    this.$eventBus.$off("saveTopo");
+    this.$eventBus.$off("download");
+    this.$eventBus.$off("openJson");
+    this.$eventBus.$off("connectMqtt");
   },
   methods: {
     async beforeAddPens(pens) {
@@ -318,7 +382,7 @@ export default {
       let res = await update(params);
       console.log(res);
       if (res.code == 200) {
-        this.$message.success("保持成功");
+        this.$message.success("保存成功");
       }
     },
     download() {
@@ -374,6 +438,31 @@ export default {
       }
       // console.log("下载完成了，嘿嘿")
     },
+    mqttInt(params){
+      if(!params){
+        console.log('===mqttInt==')
+        for(let key in this.topology.store.pens){
+          if(getTopic(this.topology.store.pens[key])){
+            this.topicMap[getTopic(this.topology.store.pens[key])] = key
+          }
+        }
+      }else{
+        this.topology.closeMqtt()
+        console.log(this.topology.store.pens)
+        let string =''
+        for(let key in this.topology.store.pens){
+          if(getTopic(this.topology.store.pens[key])){
+            string = string + ','+ getTopic(this.topology.store.pens[key])
+            this.topicMap[getTopic(this.topology.store.pens[key])] = key
+          }
+        }
+        string = string.slice(1)
+        params.mqttTopics = string
+        console.log(params,'==params==')
+        this.topology.connectMqtt(params);
+      }
+      
+    }
   },
 };
 </script>

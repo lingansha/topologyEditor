@@ -24,3 +24,11 @@ export function createComponent(data) {
         data: data,
     })
 }
+// 创建自定义组件接口批量
+export function createComponentList(data) {
+    return request({
+        url: '/api/system/customize_component_menu/create_component_list',
+        method: 'post',
+        data: data,
+    })
+}
