@@ -42,6 +42,18 @@
       </span>
     </div>
     <div>
+      <span class="menubox">
+        <span @click="drawLine">
+          <i class="el-icon-edit"></i>
+          <div>钢笔</div>
+        </span>
+      </span>
+      <span class="menubox">
+        <span @click="drawingPencil">
+          <i class="t-icon t-qianbi"></i>
+          <div>铅笔</div>
+        </span>
+      </span>
       <span class="menubox" @click="unlockClick">
         <div>
           <i :class="`t-icon ${unlock ? 't-lock warning' : 't-unlock'}`"></i>
@@ -94,6 +106,18 @@
         </div>
         
       </span>
+      <span class="menubox">
+        <span @click="magnifier">
+          <i class="t-icon t-fangdajing"></i>
+          <div>放大镜</div>
+        </span>
+      </span>
+      <span class="menubox">
+        <span @click="showMap">
+          <i :class="`${showMapStatus ? 't-icon t-ditu warning' : 't-icon t-ditu'}`"></i>
+          <div>缩略图</div>
+        </span>
+      </span>
     </div>
     <div class="barright">
       <span>
@@ -119,7 +143,9 @@ export default {
       unlock: false,
       unlock2: false,
       scale:1,
-      userInfo:localStorage.getItem('userInfo')?JSON.parse(localStorage.getItem('userInfo')):{}
+      userInfo:localStorage.getItem('userInfo')?JSON.parse(localStorage.getItem('userInfo')):{},
+      showMapStatus:false,
+      drawLineStatus:false
     };
   },
   mounted(){
@@ -197,8 +223,18 @@ export default {
     download(){
       this.$eventBus.$emit('download')
     },
-    test(e){
-      console.log(e)
+    magnifier(e){
+      this.$eventBus.$emit('toggleMagnifier')
+    },
+    showMap(){
+      this.showMapStatus = !this.showMapStatus
+      this.$eventBus.$emit('showMap',this.showMapStatus)
+    },
+    drawLine(){
+      this.$eventBus.$emit('drawLine')
+    },
+    drawingPencil(){
+      this.$eventBus.$emit('drawingPencil')
     }
   },
 };

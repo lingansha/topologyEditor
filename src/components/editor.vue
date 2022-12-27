@@ -18,7 +18,7 @@ import {
 import { sequencePens, sequencePensbyCtx } from "@topology/sequence-diagram";
 import { classPens } from "@topology/class-diagram";
 import { register as registerEcharts } from "@topology/chart-diagram";
-import { update } from "@/api/drawing.js";
+import { update,drawingTopng } from "@/api/drawing.js";
 import {proxyRequest} from "@/api/proxy.js"
 import {getPenAuthInfoParmas,getTopic} from "@/utils/util"
 export default {
@@ -176,6 +176,27 @@ export default {
     //链接mqtt
     this.$eventBus.$on("connectMqtt", (params) => {
       this.mqttInt(params)
+    });
+    //放大镜
+    this.$eventBus.$on("toggleMagnifier", (prams) => {
+      this.topology.toggleMagnifier();
+    });
+    //鹰眼
+    this.$eventBus.$on("showMap", (prams) => {
+      if(prams){
+        this.topology.showMap();
+      }else{
+        this.topology.hideMap();
+      }
+     
+    });
+    //开始钢笔
+    this.$eventBus.$on("drawLine", () => {
+      this.topology.drawLine('curve');
+    });
+    //开始铅笔
+    this.$eventBus.$on("drawingPencil", () => {
+      this.topology.drawingPencil();
     });
     const topology = new Topology("topology", this.options);
     this.topology = topology;
@@ -379,11 +400,32 @@ export default {
           : undefined,
         data: JSON.stringify(obj),
       };
-      let res = await update(params);
+      var blob = this.topology.toPng();
+      let file = this.base64toFile(blob,this.$route.query.drawingId)
+      var formData = new FormData();
+			formData.append("file", file);
+      formData.append('data',JSON.stringify(params));
+      // await drawingTopng(formData)
+      let res = await update(formData);
       console.log(res);
       if (res.code == 200) {
         this.$message.success("保存成功");
       }
+    },
+    //data:base64图片格式字符串
+    //filename：文件名称
+   base64toFile(data, fileName) {
+          const dataArr = data.split(",");
+          const byteString = atob(dataArr[1]);
+          const options = {
+            type: "image/jpeg",
+            endings: "native"
+          };
+          const u8Arr = new Uint8Array(byteString.length);
+          for (let i = 0; i < byteString.length; i++) {
+            u8Arr[i] = byteString.charCodeAt(i);
+          }
+          return new File([u8Arr], fileName + ".jpg", options);//返回文件流
     },
     download() {
       let obj = {};

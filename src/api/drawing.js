@@ -9,6 +9,9 @@ export function save(data) {
 }
 export function update(data) {
     return request({
+        headers:{
+            'Content-Type':'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
+        },
         url: '/api/drawing/update',
         method: 'post',
         data: data,
@@ -77,4 +80,14 @@ export function communicationList(params) {
         params: params,
     })
 }
-
+//生成缩略图
+export function drawingTopng(params) {
+    return request({
+        headers:{
+         'Content-Type':'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
+        },
+        url: '/api/upload/drawingImg',
+        method: 'post',
+        data: params,
+    })
+}
